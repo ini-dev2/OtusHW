@@ -7,7 +7,7 @@ namespace ShootEmUp
     {
         [SerializeField]
         private int initialCount = 50;
-        
+
         [SerializeField] private Transform container;
         [SerializeField] private Bullet prefab;
         [SerializeField] private Transform worldTransform;
@@ -76,7 +76,7 @@ namespace ShootEmUp
             if (this.m_activeBullets.Remove(bullet))
             {
                 bullet.OnCollisionEntered -= this.OnBulletCollision;
-                bullet.transform.SetParent(this.container);
+                bullet.transform.SetParent(container);
                 this.m_bulletPool.Enqueue(bullet);
             }
         }

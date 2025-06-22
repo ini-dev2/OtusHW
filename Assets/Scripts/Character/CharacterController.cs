@@ -1,49 +1,102 @@
 using UnityEngine;
+using Scripts.MoveSystem;
+using Scripts.InputSystem;
+using Scripts.HealthSystem;
 
-namespace ShootEmUp
+public sealed class CharacterController : MonoBehaviour, IHealthProvider
 {
-    public sealed class CharacterController : MonoBehaviour
+    [SerializeField] private GameObject player;
+    [SerializeField] private Rigidbody2D playerRb;
+    public Rigidbody2D PlayerRb => playerRb;
+
+    private IHealth _healthSystem;
+    private IMove _moveSystem;
+    private IInput _inputSystem;
+
+    public IHealth Health => _healthSystem;
+
+    private bool characterIsReady = false;
+
+    public void Init(IHealth health, IMove move, IInput input)
     {
-        [SerializeField] private GameObject character; 
-        [SerializeField] private GameManager gameManager;
-        [SerializeField] private BulletSystem _bulletSystem;
-        [SerializeField] private BulletConfig _bulletConfig;
-        
-        public bool _fireRequired;
-
-        private void OnEnable()
+        if (player == null)
         {
-            this.character.GetComponent<HitPointsComponent>().hpEmpty += this.OnCharacterDeath;
+            Debug.LogError("[CHARCTER_CONTROLLER] Player is null");
+            return;
         }
 
-        private void OnDisable()
+        if (playerRb == null)
         {
-            this.character.GetComponent<HitPointsComponent>().hpEmpty -= this.OnCharacterDeath;
+            Debug.LogError("[CHARCTER_CONTROLLER] Rb is null");
+            return;
         }
 
-        private void OnCharacterDeath(GameObject _) => this.gameManager.FinishGame();
+        _healthSystem = health;
+        _moveSystem = move;
+        _inputSystem = input;
 
-        private void FixedUpdate()
+        if (_healthSystem == null)
         {
-            if (this._fireRequired)
-            {
-                this.OnFlyBullet();
-                this._fireRequired = false;
-            }
+            Debug.LogError("[CHARCTER_CONTROLLER] HealthSystem is null");
+            return;
         }
 
-        private void OnFlyBullet()
+        if (_moveSystem == null)
         {
-            var weapon = this.character.GetComponent<WeaponComponent>();
-            _bulletSystem.FlyBulletByArgs(new BulletSystem.Args
-            {
-                isPlayer = true,
-                physicsLayer = (int) this._bulletConfig.physicsLayer,
-                color = this._bulletConfig.color,
-                damage = this._bulletConfig.damage,
-                position = weapon.Position,
-                velocity = weapon.Rotation * Vector3.up * this._bulletConfig.speed
-            });
+            Debug.LogError("[CHARCTER_CONTROLLER] MoveSystem is null");
+            return;
+        }
+
+        if (_inputSystem == null)
+        {
+            Debug.LogError("[CHARCTER_CONTROLLER] InputSystem is null");
+            return;
+        }
+
+        if (_inputSystem == null)
+        {
+            Debug.LogError("[CHARCTER_CONTROLLER] InputSystem is null");
+            return;
+        }
+
+        _healthSystem.hpEmpty += Death;
+
+        Debug.Log("[CHARCTER_CONTROLLER] Player is ready");
+        characterIsReady = true;
+    }
+
+
+    private void FixedUpdate()
+    {
+        if (!characterIsReady)
+        {
+            Debug.LogError("[CHARCTER_CONTROLLER] Player is not init");
+            return;
+        }
+
+        PlayerMove();
+
+        if (_inputSystem.IsFirePressed())
+        {
+            PlayerAttack();
         }
     }
+
+    public void PlayerMove()
+    {
+        Vector2 direction = new(_inputSystem.GetHorizontal(), 0);
+        _moveSystem.MoveByRigidbodyVelocity(direction * Time.deltaTime);
+    }
+
+    private void PlayerAttack()
+    {
+        
+    }
+
+    private void OnDisable()
+    {
+        _healthSystem.hpEmpty -= Death;
+    }
+
+    private void Death() => Destroy(player);
 }

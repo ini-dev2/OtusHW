@@ -806,7 +806,7 @@ MonoBehaviour:
   gameManager: {fileID: 3951702117947426123}
   _bulletSystem: {fileID: 363245577}
   _bulletConfig: {fileID: 11400000, guid: 7138ae5d32d814e0ca50c616c65ea105, type: 2}
-  _fireRequired: 0
+  _fireRequired: 1
 --- !u!1 &61006797492197339
 GameObject:
   m_ObjectHideFlags: 0
@@ -1242,6 +1242,14 @@ PrefabInstance:
     - target: {fileID: 809540891661548873, guid: 9699e7e809fd44b2bbf3d30c951ecbd2, type: 3}
       propertyPath: m_Name
       value: Character
+      objectReference: {fileID: 0}
+    - target: {fileID: 3926786963072264220, guid: 9699e7e809fd44b2bbf3d30c951ecbd2, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.53
+      objectReference: {fileID: 0}
+    - target: {fileID: 3926786964091724599, guid: 9699e7e809fd44b2bbf3d30c951ecbd2, type: 3}
+      propertyPath: hitPoints
+      value: 273
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
